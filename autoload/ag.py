@@ -1,15 +1,20 @@
 # -*- coding:utf8 -*-
 import vim, os
 
+is_debug = True
 filename = vim.eval("s:abs_filename")
+
+def debug(info):
+    if is_debug:
+        log(info)
 
 def log(info):
     f = open("/tmp/ag.log", "a+")
     f.write(info + '\n')
     f.close()
 
-log("-" * 40)
-log(filename)
+debug("-" * 40)
+debug(filename)
 
 # 找到git仓库根目录
 def getGitRootPath():
@@ -42,12 +47,12 @@ def getVendorSymbolLink():
     while directory != gitRoot:
         directory = os.path.dirname(directory)
         dirList.append(directory)
-        #log("dir:%s" % directory)
+        debug("dir:%s" % directory)
 
     vendorChildren = os.listdir(vendorDir)
     for d in vendorChildren:
         d = os.path.join(vendorDir, d)
-        #log("vd:%s" % d)
+        debug("vd:%s" % d)
         if not os.path.isdir(d):
             continue
 
@@ -57,28 +62,27 @@ def getVendorSymbolLink():
         originDir = os.readlink(d)
         originDir = os.path.join(os.path.dirname(d), originDir)
         originDir = os.path.normpath(originDir)
-        #log("originDir: %s" % originDir)
+        debug("originDir: %s" % originDir)
 
         for fold in dirList:
             if fold != originDir:
                 continue
 
-            #log("match dir:%s" % originDir)
+            debug("match dir:%s" % originDir)
             subpath = os.path.relpath(os.path.dirname(filename), fold)
             dst = os.path.join(d, subpath)
-            #log("dest: %s" % dst)
+            debug("dest: %s" % dst)
             return dst
 
     return ""
 
 # 编译软链接文件
-def compile(symFile):
-    directory = os.path.dirname(symFile)
+def compile(directory):
     cmd = "cd %s && go install" % (directory)
     stdin, stdout, stderr = os.popen3(cmd)
-    log("run cmd:%s" % cmd)
-    log("stdout:%s" % stdout.read())
-    log("stderr:%s" % stderr.read())
+    debug("run cmd:%s" % cmd)
+    debug("stdout:%s" % stdout.read())
+    debug("stderr:%s" % stderr.read())
 
 symFile = getVendorSymbolLink()
 if symFile != "":
