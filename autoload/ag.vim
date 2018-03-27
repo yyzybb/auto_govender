@@ -5,8 +5,17 @@ func! ag#warn(msg)
 endfunc
 
 let g:py_dir = fnamemodify(expand('<sfile>'), ':p:h:gs?\\?/?')
+let s:is_debug = 0
 
 func! ag#dummy()
+endfunc
+
+func! ag#toggleDebug()
+    if s:is_debug == 0
+        let s:is_debug = 1
+    else
+        let s:is_debug = 0
+    endif
 endfunc
 
 func! ag#onSave()

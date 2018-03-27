@@ -1,11 +1,11 @@
 # -*- coding:utf8 -*-
 import vim, os
 
-is_debug = True
+is_debug = vim.eval("s:is_debug")
 filename = vim.eval("s:abs_filename")
 
 def debug(info):
-    if is_debug:
+    if is_debug == "1":
         log(info)
 
 def log(info):
